@@ -1,0 +1,26 @@
+name: Deploy
+run-name: "Deploy #${{github.run_number}} by ${{ github.actor }}"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy the app
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node and pnpm
+        uses: ./.github/actions/setup
+
+      - name: Migrate database
+        run: pnpx wrangler d1 migrations apply sveltekit-drizzle-d1
+
+      - name: Publish worker
+        run: pnpx wrangler deploy

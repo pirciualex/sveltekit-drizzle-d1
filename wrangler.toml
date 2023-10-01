@@ -1,0 +1,18 @@
+name = "sveltekit-drizzle-d1"
+account_id = "728adf8b0f1d3eb071d227d26035df92"
+main = "./.cloudflare/worker.js"
+compatibility_date = "2023-10-01"
+workers_dev = true
+
+[site]
+bucket = "./.cloudflare/public"
+
+[build]
+command = "pnpm build"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sveltekit-drizzle-d1"
+database_id = "d6d2c03a-e6f4-4e51-9cac-7de310b9d990"
+migrations_table = "__drizzle_migrations"
+migrations_dir = "./src/lib/server/db/migrations"

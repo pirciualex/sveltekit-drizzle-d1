@@ -1,0 +1,36 @@
+name: "Setup action"
+description: "Setup node and pnpm (using caching)"
+inputs:
+  node-version:
+    required: false
+    default: lts/*
+  pnpm-version:
+    required: false
+    default: latest
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{inputs.node-version}}
+
+    - uses: pnpm/action-setup@v2
+      with:
+        version: ${{inputs.pnpm-version}}
+        run_install: false
+
+    - run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      shell: bash
+      id: pnpm-cache
+
+    - uses: actions/cache@v3
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - run: pnpm install --frozen-lockfile
+      shell: bash
